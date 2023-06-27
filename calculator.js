@@ -1,72 +1,78 @@
-function calcularOperacion(cadena) {
-    // Expresiones regulares para identificar las operaciones
-    const sumaRegex = /suma de (\d+) y (\d+)/i;
-    const restaRegex = /resta de (\d+) y (\d+)/i;
-    const multiplicacionRegex = /multiplicacion de (\d+) y (\d+)/i;
-    const divisionRegex = /division de (\d+) y (\d+)/i;
-  
-    let resultado = null;
-  
-    // Comprobar si la cadena coincide con alguna expresión regular y realizar la operación correspondiente
-    if (sumaRegex.test(cadena)) {
-      const matches = cadena.match(sumaRegex);
-      const num1 = parseInt(matches[1]);
-      const num2 = parseInt(matches[2]);
-      resultado = num1 + num2;
-    } else if (restaRegex.test(cadena)) {
-      const matches = cadena.match(restaRegex);
-      const num1 = parseInt(matches[1]);
-      const num2 = parseInt(matches[2]);
-      resultado = num1 - num2;
-    } else if (multiplicacionRegex.test(cadena)) {
-      const matches = cadena.match(multiplicacionRegex);
-      const num1 = parseInt(matches[1]);
-      const num2 = parseInt(matches[2]);
-      resultado = num1 * num2;
-    } else if (divisionRegex.test(cadena)) {
-      const matches = cadena.match(divisionRegex);
-      const num1 = parseInt(matches[1]);
-      const num2 = parseInt(matches[2]);
-      resultado = num1 / num2;
-    } else {
-      return "Operación no reconocida.";
+// Evaluar por orden de precedencia -> 1ero multiplicación y división y luego suma y resta
+// Cambiar la validación por test, ya que debo obtener los grupos de operaciones que tenga todo el texto. O formatear las partes para poder usar ese código usando template literals
+// testcadena = `{sumar} {num1} y {num2}`
+// Primero evaluar match por cada operación y guardar en una variable y luego realizar el condicional para hacer las operaciones
+
+
+function realizarOperaciones(cadena) {
+  const regexOperacion = /(suma|sumar|resta|restar|division|dividir|multiplicacion|multiplicar)/i;
+  const regexNumeros = /(\d+)\D+(\d+)/i;
+
+  let result1 = null;
+
+  // Paso 1: Buscar y realizar la primera operación matemática
+  const matchesOperacion = cadena.match(regexOperacion);
+  if (matchesOperacion) {
+    const operacion = matchesOperacion[0];
+    const matchesNumeros = cadena.match(regexNumeros);
+
+    if (matchesNumeros) {
+      const num1 = parseInt(matchesNumeros[1]);
+      const num2 = parseInt(matchesNumeros[2]);
+
+      if (/suma|sumar/i.test(operacion)) {
+        result1 = num1 + num2;
+      } else if (/resta|restar/i.test(operacion)) {
+        result1 = num1 - num2;
+      } else if (/division|dividir/i.test(operacion)) {
+        result1 = num1 / num2;
+      } else if (/multiplicacion|multiplicar/i.test(operacion)) {
+        result1 = num1 * num2;
+      }
+
+      // Paso 2: Crear nueva cadena eliminando la operación y los números encontrados previamente
+      cadena = cadena.replace(matchesOperacion[0], "").replace(matchesNumeros[0], "");
+      // console.log(cadena);
     }
-  
-    return resultado;
   }
-  
-  // Ejemplo de uso
-  const cadena1 = "Hacer la suma de 5 y 6";
-  const resultado1 = calcularOperacion(cadena1);
-  console.log(resultado1); // Resultado: 11
-  
-  const cadena2 = "Hacer la resta de 10 y 3";
-  const resultado2 = calcularOperacion(cadena2);
-  console.log(resultado2); // Resultado: 7
-  
-  const cadena3 = "Hacer la multiplicacion de 4 y 5";
-  const resultado3 = calcularOperacion(cadena3);
-  console.log(resultado3); // Resultado: 20
-  
-  const cadena4 = "Hacer la division de 15 y 3";
-  const resultado4 = calcularOperacion(cadena4);
-  console.log(resultado4); // Resultado: 5
-  
 
+  // Paso 3: Buscar y realizar la siguiente operación matemática (si existe)
+  while (true) {
+    const matchesOperacion = cadena.match(regexOperacion);
+    console.log(matchesOperacion);
+    const regexNumero = /(\d+)/
 
-/* switch (operador) {
-      case 'suma':
-        return num1 + num2;
-      case 'resta':
-        return num1 - num2;
-      case 'multiplicación':
-        return num1 * num2;
-      case 'multiplicacion': // Permitir una variante sin acento
-        return num1 * num2;
-      case 'división':
-        return num1 / num2;
-      case 'division': // Permitir una variante sin acento
-        return num1 / num2;
-      default:
-        return 'Operación no válida.';
-    } */
+    if (!matchesOperacion) {
+      break;
+    }
+
+    const operacion = matchesOperacion[0];
+    const matchesNumeros = cadena.match(regexNumero);
+    // console.log(matchesNumeros);
+
+    if (!matchesNumeros) {
+      break;
+    }
+
+    const numero = parseInt(matchesNumeros[1]);
+
+    if (/suma|sumar/i.test(operacion)) {
+      result1 += numero;
+    } else if (/resta|restar/i.test(operacion)) {
+      result1 -= numero;
+    } else if (/division|dividir/i.test(operacion)) {
+      result1 /= numero;
+    } else if (/multiplicacion|multiplicar/i.test(operacion)) {
+      result1 *= numero;
+    }
+
+    cadena = cadena.replace(matchesOperacion[0], "").replace(matchesNumeros[0], "");
+  }
+
+  return result1 || "No se encontró ninguna operación matemática.";
+}
+
+// Ejemplo de uso
+const cadena = "Hacer la resta de 10 y 20 y multiplicar por 2 y sumar 5";
+const resultado = realizarOperaciones(cadena);
+console.log(resultado); 
