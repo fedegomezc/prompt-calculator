@@ -80,6 +80,6 @@ function calculadora(cadena) {
 }
 
 // Ejemplo de uso
-const cadena = "sumar 7 y 13 ";
+const cadena = process.argv[2];
 const resultado = calculadora(cadena);
 console.log(resultado); 
