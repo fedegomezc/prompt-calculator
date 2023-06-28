@@ -79,7 +79,6 @@ function calculadora(cadena) {
   return result;
 }
 
-// Ejemplo de uso
 const cadena = process.argv[2];
 const resultado = calculadora(cadena);
 console.log(resultado); 
