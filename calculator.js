@@ -8,12 +8,27 @@ Se utilzan expresiones regulares (REGEX) para identificar y resolver las operaci
 
 
 function calculadora(cadena) {
-  const regexOperacion = /(suma*|resta*|divi*|multiplica*)/i;
+  const regexOperacion = /(sum*|rest*|divid*|multiplic*)/i;
   const regexNumeros = /(\d+)\D+(\d+)/i;
   let result = null;
   const error1 = 'error';
   const error2 = 'No se encontraron operaciones matemáticas a realizar, intente de nuevo';
 
+  const calculoOperacion = (operacion, num1, num2) => {
+    if (operacion === 'sum') {
+      result = num1 + num2;
+    } else if (operacion === 'rest') {
+      result = num1 - num2;
+    } else if (operacion === 'divid') {
+      if (num2 !== 0) {
+        result = num1 / num2;
+      } else {
+        result = error1;
+      }
+    } else if (operacion === 'multiplic') {
+      result = num1 * num2;
+    }
+  }
 
   const buscarPrimerOperacion = (cadena) => {
     const matchesOperacion = cadena.match(regexOperacion);
@@ -21,25 +36,11 @@ function calculadora(cadena) {
     // console.log(matchesNumeros);
 
     if (matchesOperacion && matchesNumeros) {
-      const operacion = matchesOperacion[0];
+      const operacion = matchesOperacion[0].toLowerCase();
       const num1 = parseFloat(matchesNumeros[1]);
       const num2 = parseFloat(matchesNumeros[2]);
       // console.log(num1, num2);
-      
-      
-      if (/suma|sumar/i.test(operacion)) {
-        result = num1 + num2;
-      } else if (/resta|restar/i.test(operacion)) {
-        result = num1 - num2;
-      } else if (/division|dividir/i.test(operacion)) {
-        if (num2 !== 0) {
-          result = num1 / num2;
-        } else {
-          result = error1;
-        }
-      } else if (/multiplicacion|multiplicar/i.test(operacion)) {
-        result = num1 * num2;
-      }
+      calculoOperacion(operacion, num1, num2);
 
       cadena = cadena.replace(matchesOperacion[0], "").replace(matchesNumeros[0], "");
       // console.log(cadena)
@@ -59,23 +60,11 @@ function calculadora(cadena) {
       if (!matchesOperacion || !matchesNumero) {
         break;
       }
-      const operacion = matchesOperacion[0];
-      const numero = parseFloat(matchesNumero[1]);
+      const operacion = matchesOperacion[0].toLowerCase();
+      const num1 = result;
+      const num2 = parseFloat(matchesNumero[1]);
 
-      if (/suma|sumar/i.test(operacion)) {
-        result += numero;
-      } else if (/resta|restar/i.test(operacion)) {
-        result -= numero;
-      } else if (/division|dividir/i.test(operacion)) {
-        if (numero !== 0) {
-          result /= numero;
-        } else {
-          result = 'error';
-          break
-        }
-      } else if (/multiplicacion|multiplicar/i.test(operacion)) {
-        result *= numero;
-      }
+      calculoOperacion(operacion, num1, num2);
 
       cadenaNueva = cadenaNueva.replace(matchesOperacion[0], "").replace(matchesNumero[0], "");
     }
