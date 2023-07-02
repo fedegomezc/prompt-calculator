@@ -1,14 +1,6 @@
 /* CALCULADORA QUE FUNCIONA INGRESANDO UN TEXTO CON LAS OPERACIONES DESEADAS
 Se utilzan expresiones regulares (REGEX) para identificar y resolver las operaciones */
 
-/* Features: Validación ingreso por consola. 
-          Se modifica regexOperación utilizando '*' para tomar todo caso posible.
-          Se crea funcion calculoOperacion para no repetir codigo
-          Se contemplan valores negativos y flotantes */
-
-// TODO: Contemplar casos como: 'Dividir la suma de 5 y 7 por 3.
-
-
 function calculadora(cadena) {
   const regexOperacion = /(sum*|rest*|divid*|multiplic*)/i;
   const regexNumeros = /-?\d+(?:\.\d+)?/g;
@@ -35,13 +27,12 @@ function calculadora(cadena) {
   const buscarPrimerOperacion = (cadena) => {
     const matchesOperacion = cadena.match(regexOperacion);
     const matchesNumeros = cadena.match(regexNumeros);
-    console.log(matchesNumeros);
 
     if (matchesOperacion && matchesNumeros) {
       const operacion = matchesOperacion[0].toLowerCase();
       const num1 = parseFloat(matchesNumeros[0]);
       const num2 = parseFloat(matchesNumeros[1]);
-      
+
       calculoOperacion(operacion, num1, num2);
       cadena = cadena.replace(matchesOperacion[0], "").replace(matchesNumeros[0], "").replace(matchesNumeros[1], "");
     } else {
@@ -73,15 +64,13 @@ function calculadora(cadena) {
   if (result !== error1 || error2) {
     buscarSiguienteOperacion(cadenaNueva);
   }
-
   return result;
 }
 
-if(!process.argv[2]){
+if (!process.argv[2]) {
   console.log("No enviaste ningún texto")
   process.exit(1)
 }
-
 const cadena = process.argv[2];
 const resultado = calculadora(cadena);
 console.log(resultado); 
