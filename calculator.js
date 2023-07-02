@@ -1,15 +1,17 @@
 /* CALCULADORA QUE FUNCIONA INGRESANDO UN TEXTO CON LAS OPERACIONES DESEADAS
 Se utilzan expresiones regulares (REGEX) para identificar y resolver las operaciones */
 
-// Features: Validación ingreso por consola. Se modifica regexOperación utilizando '*' para tomar todo caso posible.
-// TODO: crear otra funcion que haga las operaciones, ya que se repite al buscar más operaciones
-// TODO: Contemplar valores negativos y flotantes
+/* Features: Validación ingreso por consola. 
+          Se modifica regexOperación utilizando '*' para tomar todo caso posible.
+          Se crea funcion calculoOperacion para no repetir codigo
+          Se contemplan valores negativos y flotantes */
+
 // TODO: Contemplar casos como: 'Dividir la suma de 5 y 7 por 3.
 
 
 function calculadora(cadena) {
   const regexOperacion = /(sum*|rest*|divid*|multiplic*)/i;
-  const regexNumeros = /(\d+)\D+(\d+)/i;
+  const regexNumeros = /-?\d+(?:\.\d+)?/g;
   let result = null;
   const error1 = 'error';
   const error2 = 'No se encontraron operaciones matemáticas a realizar, intente de nuevo';
@@ -33,17 +35,15 @@ function calculadora(cadena) {
   const buscarPrimerOperacion = (cadena) => {
     const matchesOperacion = cadena.match(regexOperacion);
     const matchesNumeros = cadena.match(regexNumeros);
-    // console.log(matchesNumeros);
+    console.log(matchesNumeros);
 
     if (matchesOperacion && matchesNumeros) {
       const operacion = matchesOperacion[0].toLowerCase();
-      const num1 = parseFloat(matchesNumeros[1]);
-      const num2 = parseFloat(matchesNumeros[2]);
-      // console.log(num1, num2);
+      const num1 = parseFloat(matchesNumeros[0]);
+      const num2 = parseFloat(matchesNumeros[1]);
+      
       calculoOperacion(operacion, num1, num2);
-
-      cadena = cadena.replace(matchesOperacion[0], "").replace(matchesNumeros[0], "");
-      // console.log(cadena)
+      cadena = cadena.replace(matchesOperacion[0], "").replace(matchesNumeros[0], "").replace(matchesNumeros[1], "");
     } else {
       result = error2;
     }
@@ -53,16 +53,15 @@ function calculadora(cadena) {
 
   const buscarSiguienteOperacion = (cadenaNueva) => {
     while (true) {
-      const regexNumero = /(\d+)/
       const matchesOperacion = cadenaNueva.match(regexOperacion);
-      const matchesNumero = cadenaNueva.match(regexNumero);
+      const matchesNumero = cadenaNueva.match(regexNumeros);
 
       if (!matchesOperacion || !matchesNumero) {
         break;
       }
       const operacion = matchesOperacion[0].toLowerCase();
       const num1 = result;
-      const num2 = parseFloat(matchesNumero[1]);
+      const num2 = parseFloat(matchesNumero[0]);
 
       calculoOperacion(operacion, num1, num2);
 
